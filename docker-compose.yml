@@ -1,0 +1,6 @@
+services:
+  whatsapp-bot:
+    build: .
+    volumes:
+      - ./wwebjs_auth:/root/.wwebjs_auth
+    tty: true
