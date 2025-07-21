@@ -1,8 +1,13 @@
 import pkg from 'whatsapp-web.js';
 const { Client, LocalAuth } = pkg;
 import qrcode from 'qrcode-terminal';
+import 'dotenv/config';
 
-// Initialize the client
+// Replace with your account ID (log it from the bot)
+const OWNER_ID = process.env.OWNER_ID;
+
+const normalizeId = (id) => id?.replace(/:\d+/, '');
+
 const client = new Client({
   authStrategy: new LocalAuth(),
   puppeteer: {
@@ -10,36 +15,35 @@ const client = new Client({
     args: ['--no-sandbox', '--disable-setuid-sandbox']
   },
   takeoverOnConflict: true,
-  syncFullHistory: true,
+  syncFullHistory: false,
   ignoreChats: false,
 });
 
-// Generate QR Code
 client.on('qr', qr => {
   qrcode.generate(qr, { small: true });
 });
 
-// Bot ready
-client.on('ready', async () => {
-  console.log('✅ WhatsApp Bot is ready!');
-  const chats = await client.getChats();
-  const groups = chats.filter(chat => chat.isGroup);
-  console.log(`📦 Joined ${groups.length} group(s).`);
-});
-
-// Listen to all messages (others and yourself)
 const handleMessage = async (message) => {
   try {
     const chat = await message.getChat();
+    const isGroup = chat.isGroup;
+    const senderId = message.fromMe
+      ? message.from // you sent it
+      : normalizeId(message.author || message.from); // someone else sent it
 
-    console.log(`📩 ${chat.name || 'Private Chat'} | ${message.from}: ${message.body}`);
+    console.log(`📩 ${chat.name || 'Private Chat'} | ${senderId}: ${message.body}`);
 
     if (message.body === '!tagall') {
-      if (!chat.isGroup) {
+      if (senderId !== OWNER_ID) {
+        console.log('⛔ Not owner, skipping.');
+        return;
+      }
+
+      if (!isGroup) {
         return message.reply('❌ This command only works in groups.');
       }
 
-      let mentions = [];
+      const mentions = [];
       let text = '';
 
       for (const participant of chat.participants) {
@@ -48,14 +52,12 @@ const handleMessage = async (message) => {
         text += `@${contact.number} `;
       }
 
-      await chat.sendMessage(text, { mentions });
+      await chat.sendMessage(text.trim(), { mentions });
     }
   } catch (err) {
     console.error('❌ Error handling message:', err);
   }
 };
 
-//client.on('message', handleMessage);         // For messages from others
-client.on('message_create', handleMessage);  // For your own messages
-
+client.on('message_create', handleMessage);
 client.initialize();

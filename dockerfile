@@ -28,9 +28,15 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 
+# Install dependencies
 COPY package*.json ./
 RUN npm install
 
+# Copy source files
 COPY . .
 
+# Copy environment variables
+COPY .env .env
+
+# Start the bot
 CMD ["npm", "start"]

@@ -3,4 +3,6 @@ services:
     build: .
     volumes:
       - ./wwebjs_auth:/root/.wwebjs_auth
+    env_file:
+      - .env
     tty: true
