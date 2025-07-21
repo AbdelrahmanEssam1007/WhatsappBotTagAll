@@ -3,7 +3,7 @@ const { Client, LocalAuth } = pkg;
 import qrcode from 'qrcode-terminal';
 import 'dotenv/config';
 
-// Replace with your account ID (log it from the bot)
+// Replace with your account ID in .env file (log it from the bot)
 const OWNER_ID = process.env.OWNER_ID;
 
 const normalizeId = (id) => id?.replace(/:\d+/, '');
