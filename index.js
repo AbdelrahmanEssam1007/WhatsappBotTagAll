@@ -59,5 +59,15 @@ const handleMessage = async (message) => {
   }
 };
 
+client.on('authenticated', () => {
+  console.log('🔐 Authentication successful!');
+});
+
+
+client.on('ready', () => {
+  console.log('WhatsApp bot is ready!');
+});
+
 client.on('message_create', handleMessage);
+//client.on('message', handleMessage);
 client.initialize();
