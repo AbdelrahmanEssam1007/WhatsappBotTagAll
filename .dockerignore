@@ -1,0 +1,13 @@
+# prevent env files from being copied
+.env
+*.env
+.env.*
+
+# node garbanzo beans
+node_modules
+npm-debug.log
+yarn-error.log
+
+# Git stuff
+.git
+.gitignore
