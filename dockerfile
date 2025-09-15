@@ -1,8 +1,7 @@
-FROM node:20-slim
+FROM node:20
 
-# Install Chromium + git (needed for github deps)
-RUN apt-get update && apt-get install -y --no-install-recommends \
-  git \
+# Install Chromium dependencies
+RUN apt-get update && apt-get install -y \
   wget \
   ca-certificates \
   fonts-liberation \
@@ -25,14 +24,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
   libxshmfence1 \
   libxext6 \
   xdg-utils \
-  && rm -rf /var/lib/apt/lists/*
+  --no-install-recommends && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
+# Install dependencies
 COPY package*.json ./
+RUN npm install
 
-RUN npm install --omit=dev
-
+# Copy source files
 COPY . .
-
+# Start the bot
 CMD ["npm", "start"]
