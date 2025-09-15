@@ -1,11 +1,8 @@
-<<<<<<< HEAD
 FROM node:24.8.0-slim
-=======
-FROM node:20
->>>>>>> 8cbccf20305cf02335a9ac870c13c9b76271d8c6
 
-# Install Chromium dependencies
-RUN apt-get update && apt-get install -y \
+# Install Chromium + git (needed for github deps)
+RUN apt-get update && apt-get install -y --no-install-recommends \
+  git \
   wget \
   ca-certificates \
   fonts-liberation \
